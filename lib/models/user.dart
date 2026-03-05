@@ -1,5 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// Timestamp または String から DateTime に変換するヘルパー
+DateTime? _parseDateTime(dynamic value) {
+  if (value == null) return null;
+  if (value is Timestamp) return value.toDate();
+  if (value is String) return DateTime.tryParse(value);
+  return null;
+}
+
 class Gender {
   static const int unknown = 0;
   static const int male = 1;
@@ -83,11 +91,11 @@ class User {
     return User(uid: doc.id, sex: data['sex'] as int? ?? Gender.unknown, place: data['place'] as int? ?? 0,
       age: data['age'] as int? ?? 20, name: data['name'] as String? ?? 'ゲスト', msg: data['msg'] as String? ?? '',
       img: data['img'] as String?, imgS: data['imgS'] as String?,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (data['lastActiveAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      isSecret: data['isSecretMode'] as bool? ?? false, secretUntil: (data['secretUntil'] as Timestamp?)?.toDate(),
+      createdAt: _parseDateTime(data['createdAt']) ?? DateTime.now(),
+      updatedAt: _parseDateTime(data['lastActiveAt']) ?? DateTime.now(),
+      isSecret: data['isSecretMode'] as bool? ?? false, secretUntil: _parseDateTime(data['secretUntil']),
       isBanned: data['isBanned'] as bool? ?? false, banReason: data['banReason'] as String?,
-      bannedAt: (data['bannedAt'] as Timestamp?)?.toDate(),
+      bannedAt: _parseDateTime(data['bannedAt']),
       blockedUserIds: (data['blockedUserIds'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       deviceToken: data['deviceToken'] as String?, lastIpAddress: data['lastIpAddress'] as String?,
       deviceId: data['deviceId'] as String?, deviceModel: data['deviceModel'] as String?,
