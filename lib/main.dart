@@ -418,11 +418,26 @@ class PostCard extends StatelessWidget {
   }
 
   void _sendYoro(BuildContext context, String toUserId) async {
-    if (currentUserId == null) return;
+    debugPrint('[DEBUG] _sendYoro called: currentUserId=$currentUserId, toUserId=$toUserId');
+
+    if (currentUserId == null) {
+      debugPrint('[DEBUG] _sendYoro: currentUserId is null, showing login prompt');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('ログインしてください'),
+            backgroundColor: AppTheme.error,
+          ),
+        );
+      }
+      return;
+    }
 
     final firestoreService = FirestoreService();
     try {
+      debugPrint('[DEBUG] _sendYoro: calling firestoreService.sendYoro');
       await firestoreService.sendYoro(currentUserId!, toUserId);
+      debugPrint('[DEBUG] _sendYoro: success');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -433,12 +448,23 @@ class PostCard extends StatelessWidget {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('[ERROR] _sendYoro failed: $e');
+      debugPrint('[ERROR] Stack trace: $stackTrace');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$e'),
-            backgroundColor: AppTheme.error,
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('エラー'),
+            content: SingleChildScrollView(
+              child: Text('$e\n\n$stackTrace'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('閉じる'),
+              ),
+            ],
           ),
         );
       }
@@ -723,11 +749,23 @@ class UserProfileSheet extends StatelessWidget {
   }
 
   void _sendYoro(BuildContext context) async {
-    if (currentUserId == null) return;
+    debugPrint('[DEBUG] _sendYoro(profile) called: currentUserId=$currentUserId, toUserId=${user.uid}');
+
+    if (currentUserId == null) {
+      debugPrint('[DEBUG] _sendYoro(profile): currentUserId is null');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('ログインしてください'), backgroundColor: AppTheme.error),
+        );
+      }
+      return;
+    }
 
     final firestoreService = FirestoreService();
     try {
+      debugPrint('[DEBUG] _sendYoro(profile): calling sendYoro');
       await firestoreService.sendYoro(currentUserId!, user.uid);
+      debugPrint('[DEBUG] _sendYoro(profile): success');
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -737,10 +775,17 @@ class UserProfileSheet extends StatelessWidget {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('[ERROR] _sendYoro(profile) failed: $e');
+      debugPrint('[ERROR] Stack trace: $stackTrace');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e'), backgroundColor: AppTheme.error),
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('エラー'),
+            content: SingleChildScrollView(child: Text('$e\n\n$stackTrace')),
+            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('閉じる'))],
+          ),
         );
       }
     }
@@ -1221,10 +1266,22 @@ class UserCard extends StatelessWidget {
   }
 
   void _sendYoro(BuildContext context) async {
-    if (currentUserId == null) return;
+    debugPrint('[DEBUG] _sendYoro(card) called: currentUserId=$currentUserId, toUserId=${user.uid}');
+
+    if (currentUserId == null) {
+      debugPrint('[DEBUG] _sendYoro(card): currentUserId is null');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('ログインしてください'), backgroundColor: AppTheme.error),
+        );
+      }
+      return;
+    }
 
     try {
+      debugPrint('[DEBUG] _sendYoro(card): calling sendYoro');
       await FirestoreService().sendYoro(currentUserId!, user.uid);
+      debugPrint('[DEBUG] _sendYoro(card): success');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -1234,10 +1291,17 @@ class UserCard extends StatelessWidget {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('[ERROR] _sendYoro(card) failed: $e');
+      debugPrint('[ERROR] Stack trace: $stackTrace');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e'), backgroundColor: AppTheme.error),
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('エラー'),
+            content: SingleChildScrollView(child: Text('$e\n\n$stackTrace')),
+            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('閉じる'))],
+          ),
         );
       }
     }
