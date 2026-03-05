@@ -59,7 +59,7 @@ class FirestoreService {
   /// ユーザー状態更新（オンライン状態更新用）（APK: /user/update.php相当）
   Future<void> updateUserLastActive(String uid) async {
     await _usersRef.doc(uid).update({
-      'updatedAt': Timestamp.now(),
+      'lastActiveAt': Timestamp.now(),
     });
   }
 
@@ -75,9 +75,9 @@ class FirestoreService {
   /// myUidはオプション（指定すると自分を除外）
   Stream<List<User>> getTimelineUsers([String? myUid]) {
     return _usersRef
-        .where('isSecret', isEqualTo: false)
+        .where('isSecretMode', isEqualTo: false)
         .where('isBanned', isEqualTo: false)
-        .orderBy('updatedAt', descending: true)
+        .orderBy('lastActiveAt', descending: true)
         .limit(50)
         .snapshots()
         .map((snapshot) {
@@ -99,7 +99,7 @@ class FirestoreService {
     int limit = 50,
   }) {
     Query<Map<String, dynamic>> query = _usersRef
-        .where('isSecret', isEqualTo: false)
+        .where('isSecretMode', isEqualTo: false)
         .where('isBanned', isEqualTo: false);
 
     if (sex != null && sex != Gender.unknown) {
@@ -200,7 +200,7 @@ class FirestoreService {
   /// シークレットモード設定
   Future<void> setSecretMode(String uid, bool isSecret, DateTime? until) async {
     await _usersRef.doc(uid).update({
-      'isSecret': isSecret,
+      'isSecretMode': isSecret,
       'secretUntil': until != null ? Timestamp.fromDate(until) : null,
     });
   }
