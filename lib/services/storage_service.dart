@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -25,7 +24,7 @@ class StorageService {
     final extension = imageFile.path.split('.').last;
     final fileName = '${_uuid.v4()}.$extension';
     final largePath = 'users/$userId/profile/$fileName';
-    final smallPath = 'users/$userId/profile/thumb_$fileName';
+    // smallPath は Cloud Functions でリサイズ時に使用予定
 
     // 大きい画像をアップロード
     final largeRef = _storage.ref().child(largePath);

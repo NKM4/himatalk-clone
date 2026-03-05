@@ -343,7 +343,10 @@ class FirestoreService {
         .orderBy('updatedAt', descending: true)
         .snapshots()
         .asyncMap((snapshot) async {
-      final rooms = <Room>[];
+      // === N+1問題修正: パートナーUIDを先に収集して一括取得 ===
+      final roomDataList = <(DocumentSnapshot<Map<String, dynamic>>, String)>[];
+      final partnerUids = <String>{};
+
       for (final doc in snapshot.docs) {
         final data = doc.data();
         final participants = List<String>.from(data['participants'] ?? []);
@@ -352,10 +355,29 @@ class FirestoreService {
           orElse: () => '',
         );
         if (partnerUid.isEmpty) continue;
+        roomDataList.add((doc, partnerUid));
+        partnerUids.add(partnerUid);
+      }
 
-        // 相手のユーザー情報を取得
-        final partner = await getUser(partnerUid);
+      if (partnerUids.isEmpty) return <Room>[];
+
+      // 一括でユーザー情報を取得（whereInは最大10件）
+      final partnerMap = <String, User>{};
+      final uidList = partnerUids.toList();
+      for (var i = 0; i < uidList.length; i += 10) {
+        final batch = uidList.skip(i).take(10).toList();
+        final userSnap = await _usersRef.where(FieldPath.documentId, whereIn: batch).get();
+        for (final userDoc in userSnap.docs) {
+          partnerMap[userDoc.id] = User.fromFirestore(userDoc);
+        }
+      }
+
+      // ルームリストを構築
+      final rooms = <Room>[];
+      for (final (doc, partnerUid) in roomDataList) {
+        final partner = partnerMap[partnerUid];
         if (partner == null) continue;
+        final data = doc.data()!;
 
         rooms.add(Room(
           roomKey: doc.id,

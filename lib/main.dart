@@ -452,20 +452,9 @@ class PostCard extends StatelessWidget {
       debugPrint('[ERROR] _sendYoro failed: $e');
       debugPrint('[ERROR] Stack trace: $stackTrace');
       if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('エラー'),
-            content: SingleChildScrollView(
-              child: Text('$e\n\n$stackTrace'),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('閉じる'),
-              ),
-            ],
-          ),
+        final msg = e.toString().replaceFirst('Exception: ', '');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: AppTheme.error),
         );
       }
     }
@@ -779,13 +768,9 @@ class UserProfileSheet extends StatelessWidget {
       debugPrint('[ERROR] _sendYoro(profile) failed: $e');
       debugPrint('[ERROR] Stack trace: $stackTrace');
       if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('エラー'),
-            content: SingleChildScrollView(child: Text('$e\n\n$stackTrace')),
-            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('閉じる'))],
-          ),
+        final msg = e.toString().replaceFirst('Exception: ', '');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: AppTheme.error),
         );
       }
     }
@@ -1295,13 +1280,9 @@ class UserCard extends StatelessWidget {
       debugPrint('[ERROR] _sendYoro(card) failed: $e');
       debugPrint('[ERROR] Stack trace: $stackTrace');
       if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('エラー'),
-            content: SingleChildScrollView(child: Text('$e\n\n$stackTrace')),
-            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('閉じる'))],
-          ),
+        final msg = e.toString().replaceFirst('Exception: ', '');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: AppTheme.error),
         );
       }
     }
