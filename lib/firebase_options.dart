@@ -31,14 +31,15 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // Web configuration (uses same API key as Android for now)
+  // Web configuration (registered in Firebase Console)
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyATGgLGb6h2kYRhKSirKH3NeU0XsGNHNn8',
-    appId: '1:35694804745:android:cc735f0586668769cc9dd8',
+    apiKey: 'AIzaSyCtVlkDVGiOl0RUKq5iZIPe9Q7q2hzuMdc',
+    appId: '1:35694804745:web:dde721f5c78c3a34cc9dd8',
     messagingSenderId: '35694804745',
     projectId: 'himatalk-clone',
     authDomain: 'himatalk-clone.firebaseapp.com',
     storageBucket: 'himatalk-clone.firebasestorage.app',
+    measurementId: 'G-1J8NH8BDYF',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
